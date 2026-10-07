@@ -1,11 +1,24 @@
-import { Focus, Moon, Sun, Telescope } from 'lucide-react'
+import { Focus, Moon, Sun, Sunset, Telescope } from 'lucide-react'
 import { useViewerStore } from '../../store/viewerStore'
+import { photoreceptorLightModes } from '../../data/photoreceptors'
+import type { PhotoreceptorLight } from '../../types'
+
+const teachingLights: PhotoreceptorLight[] = ['bright', 'twilight', 'dark']
 
 export default function ContextControls() {
   const focusMode = useViewerStore((state) => state.focusMode)
   const ambientMode = useViewerStore((state) => state.ambientMode)
   const setFocusMode = useViewerStore((state) => state.setFocusMode)
   const setAmbientMode = useViewerStore((state) => state.setAmbientMode)
+  const explorationMode = useViewerStore((state) => state.explorationMode)
+  const photoreceptorLight = useViewerStore((state) => state.photoreceptorLight)
+  const setPhotoreceptorLight = useViewerStore((state) => state.setPhotoreceptorLight)
+
+  if (explorationMode === 'photoreceptors') return (
+    <div className="context-controls photoreceptor-context">
+      <div className="context-setting"><span className="context-icon ambient-icon"><Sun size={19} /></span><div className="context-text"><strong>教学光照</strong><small>观察两种细胞的相对视觉贡献</small></div><div className="segmented compact-segmented photo-light-segmented" role="group" aria-label="感光细胞教学光照">{teachingLights.map((light) => <button key={light} className={photoreceptorLight === light ? 'selected' : ''} aria-pressed={photoreceptorLight === light} onClick={() => setPhotoreceptorLight(light)}>{light === 'bright' ? <Sun size={13} /> : light === 'twilight' ? <Sunset size={13} /> : <Moon size={13} />}{photoreceptorLightModes[light].nameZh}</button>)}</div></div>
+    </div>
+  )
 
   return (
     <div className="context-controls">

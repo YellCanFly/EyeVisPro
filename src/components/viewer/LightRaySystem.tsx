@@ -6,10 +6,9 @@ import { buildOpticalRays, samplePolyline } from '../../utils/optics'
 import type { OpticalRay } from '../../utils/optics'
 import type { Vector3Tuple } from '../../types'
 import { useVisionAnimationClock } from './VisionAnimation'
+import { NEURAL_PATH } from '../../data/eyeLandmarks'
 
 const NO_PICKING = () => undefined
-const NEURAL_PATH: Vector3Tuple[] = [[1.55, -0.21, 0.09], [1.67, -0.29, -0.2], [2.05, -0.35, -0.23], [2.83, -0.53, -0.3]]
-
 // A polyline curve preserves a visible angular kink at both refracting surfaces.
 class PolylineCurve extends THREE.Curve<THREE.Vector3> {
   constructor(private readonly points: Vector3Tuple[]) { super() }

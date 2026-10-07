@@ -13,6 +13,11 @@ export type StructureId =
 export type ViewMode = 'full' | 'cutaway'
 export type FocusMode = 'far' | 'near'
 export type AmbientMode = 'bright' | 'dim'
+export type ExplorationMode = 'vision' | 'photoreceptors'
+export type PhotoreceptorView = 'distribution' | 'detail'
+export type PhotoreceptorRegion = 'fovea' | 'peripheral' | 'optic-disc'
+export type PhotoreceptorSelection = 'both' | 'cone' | 'rod'
+export type PhotoreceptorLight = 'bright' | 'twilight' | 'dark'
 export type CameraPreset = 'side-cutaway' | 'front'
 export type Vector3Tuple = [number, number, number]
 

@@ -6,6 +6,7 @@ import { useViewerStore } from '../../store/viewerStore'
 import { getLensThickness, getPupilRadius } from '../../utils/optics'
 import type { StructureId, Vector3Tuple } from '../../types'
 import { useStructureInteraction } from './SelectionHighlight'
+import { MACULA_POSITION, NERVE_POINTS } from '../../data/eyeLandmarks'
 
 const SEGMENTS = 80
 const NO_PICKING = () => undefined
@@ -228,8 +229,6 @@ function Vitreous({ cutaway }: { cutaway: boolean }) {
   </mesh>
 }
 
-export const NERVE_POINTS: Vector3Tuple[] = [[1.43, -0.25, -0.48], [1.80, -0.31, -0.48], [2.22, -0.37, -0.5], [2.85, -0.54, -0.55]]
-
 function OpticNerve() {
   const appearance = useStructureInteraction('optic-nerve')
   const geometry = useDisposableGeometry(() => new THREE.TubeGeometry(new THREE.CatmullRomCurve3(NERVE_POINTS.map((p) => new THREE.Vector3(...p))), 40, 0.23, 20, false), [])
@@ -248,7 +247,7 @@ function OpticNerve() {
 
 function Macula() {
   const appearance = useStructureInteraction('macula')
-  const position = new THREE.Vector3(1.47, 0.08, -0.5)
+  const position = new THREE.Vector3(...MACULA_POSITION)
   const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), position.clone().normalize().negate())
   return <group position={position} quaternion={quaternion}>
     <mesh name={appearance.name} {...appearance.handlers}>
@@ -275,24 +274,26 @@ function BloodVessels({ cutaway }: { cutaway: boolean }) {
   return <group>{paths.map((points, index) => <Line key={index} points={points} color="#c58e8e" transparent opacity={0.32} lineWidth={0.65} raycast={NO_PICKING} />)}</group>
 }
 
-export default function EyeModel() {
-  const cutaway = useViewerStore((state) => state.viewMode === 'cutaway')
+export default function EyeModel({ retinaOnly = false, forceCutaway = false }: { retinaOnly?: boolean; forceCutaway?: boolean }) {
+  const cutaway = useViewerStore((state) => state.viewMode === 'cutaway') || forceCutaway
   return <group>
-    <Shell id="sclera" radius={1.65} color="#eeece3" cutaway={cutaway} />
+    {!retinaOnly && <Shell id="sclera" radius={1.65} color="#eeece3" cutaway={cutaway} />}
     <Shell id="retina" radius={1.592} color={cutaway ? '#bc8980' : '#303137'} cutaway={cutaway} thetaStart={0.86} />
     <Shell id="retina" radius={1.56} color={cutaway ? '#db9d88' : '#222b30'} cutaway={cutaway} thetaStart={0.86} />
     {cutaway && <>
-      <CutRim id="sclera" inner={1.60} outer={1.65} start={0.57} color="#f5f0e8" />
+      {!retinaOnly && <CutRim id="sclera" inner={1.60} outer={1.65} start={0.57} color="#f5f0e8" />}
       <CutRim id="retina" inner={1.575} outer={1.60} start={0.86} color="#b4786d" />
       <CutRim id="retina" inner={1.54} outer={1.575} start={0.86} color="#eeb59a" />
     </>}
-    <Vitreous cutaway={cutaway} />
-    <CiliaryBody cutaway={cutaway} />
-    <Lens cutaway={cutaway} />
-    <Iris cutaway={cutaway} />
-    <Cornea cutaway={cutaway} />
-    <OpticNerve />
-    <Macula />
-    <BloodVessels cutaway={cutaway} />
+    {!retinaOnly && <>
+      <Vitreous cutaway={cutaway} />
+      <CiliaryBody cutaway={cutaway} />
+      <Lens cutaway={cutaway} />
+      <Iris cutaway={cutaway} />
+      <Cornea cutaway={cutaway} />
+      <OpticNerve />
+      <Macula />
+      <BloodVessels cutaway={cutaway} />
+    </>}
   </group>
 }

@@ -6,6 +6,9 @@ import { annotations } from '../../data/annotations'
 import { structureById } from '../../data/eyeStructures'
 import { useViewerStore } from '../../store/viewerStore'
 import type { Vector3Tuple } from '../../types'
+import type { PhotoreceptorRegion } from '../../types'
+import { photoreceptorCells, photoreceptorRegions } from '../../data/photoreceptors'
+import { getPhotoreceptorDetailLabels } from '../../data/photoreceptorAnnotations'
 
 export type LabelRegistry = Map<string, { element: HTMLDivElement; position: THREE.Vector3 }>
 
@@ -32,6 +35,11 @@ export default function ProjectedLabels({ registry }: { registry: RefObject<Labe
   const rays = useViewerStore((state) => state.showLightRays)
   const focus = useViewerStore((state) => state.focusMode)
   const step = useViewerStore((state) => state.currentVisionStep)
+  const exploration = useViewerStore((state) => state.explorationMode)
+  const photoView = useViewerStore((state) => state.photoreceptorView)
+  const photoRegion = useViewerStore((state) => state.photoreceptorRegion)
+  const photoSelection = useViewerStore((state) => state.selectedPhotoreceptor)
+  const photoreceptors = exploration === 'photoreceptors'
 
   function anchor(id: string, position: Vector3Tuple) {
     return (element: HTMLDivElement | null) => {
@@ -42,7 +50,7 @@ export default function ProjectedLabels({ registry }: { registry: RefObject<Labe
   const outerStyle = { position: 'absolute' as const, top: 0, left: 0, visibility: 'hidden' as const }
   const centeredStyle = { transform: 'translate(-50%, -50%)', whiteSpace: 'nowrap' as const }
   return <div style={{ position: 'absolute', inset: 0, zIndex: 4, pointerEvents: 'none', overflow: 'hidden' }}>
-    {show && annotations.filter((annotation) => mode === 'cutaway' || annotation.fullVisible).map((annotation) => {
+    {show && !photoreceptors && annotations.filter((annotation) => mode === 'cutaway' || annotation.fullVisible).map((annotation) => {
       const structure = structureById[annotation.structureId]
       if (!structure) return null
       return <div key={annotation.id} ref={anchor(annotation.id, annotation.labelPosition)} style={outerStyle}>
@@ -55,10 +63,29 @@ export default function ProjectedLabels({ registry }: { registry: RefObject<Labe
         </div>
       </div>
     })}
-    {rays && <div ref={anchor('object-caption', [focus === 'near' ? -2.9 : -3.65, -1, 0.1])} style={outerStyle}>
+    {show && photoreceptors && photoView === 'distribution' && (Object.keys(photoreceptorRegions) as PhotoreceptorRegion[]).map((id) => {
+      const region = photoreceptorRegions[id]
+      return <div key={`photo-${id}`} ref={anchor(`photo-${id}`, region.labelPosition)} style={outerStyle}>
+        <div style={centeredStyle}>
+          <button type="button" className={`annotation-label${photoRegion === id ? ' active' : ''}`} style={{ pointerEvents: 'auto' }} aria-pressed={photoRegion === id} title="选择位置，双击放大局部"
+            onClick={() => useViewerStore.getState().setPhotoreceptorRegion(id)}
+            onDoubleClick={() => { useViewerStore.getState().setPhotoreceptorRegion(id); useViewerStore.getState().setPhotoreceptorView('detail') }}>
+            {region.nameZh}
+          </button>
+        </div>
+      </div>
+    })}
+    {show && photoreceptors && photoView === 'detail' && getPhotoreceptorDetailLabels(photoRegion, photoSelection).map((label) => <div key={label.id} ref={anchor(label.id, label.position)} style={outerStyle}>
+      <div style={centeredStyle}>
+        {label.kind ? <button type="button" className={`annotation-label${photoSelection === label.kind ? ' active' : ''}`} style={{ pointerEvents: 'auto', borderColor: photoreceptorCells[label.kind].color }} aria-pressed={photoSelection === label.kind}
+          onClick={() => useViewerStore.getState().selectPhotoreceptor(label.kind!)}>{label.text}</button>
+          : <span className="scene-caption">{label.text}</span>}
+      </div>
+    </div>)}
+    {rays && !photoreceptors && <div ref={anchor('object-caption', [focus === 'near' ? -2.9 : -3.65, -1, 0.1])} style={outerStyle}>
       <div style={centeredStyle}><span className="scene-caption">外界物体</span></div>
     </div>}
-    {rays && mode === 'cutaway' && step >= 4 && <div ref={anchor('image-caption', [1.55, -0.81, 0.1])} style={outerStyle}>
+    {rays && !photoreceptors && mode === 'cutaway' && step >= 4 && <div ref={anchor('image-caption', [1.55, -0.81, 0.1])} style={outerStyle}>
       <div style={centeredStyle}><span className="scene-caption">倒立 · 缩小</span></div>
     </div>}
   </div>

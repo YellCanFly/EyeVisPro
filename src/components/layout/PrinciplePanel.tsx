@@ -1,8 +1,9 @@
 import { useState, type KeyboardEvent } from 'react'
-import { ArrowRight, Check, ChevronRight, Layers3, Route, Sparkles } from 'lucide-react'
+import { ArrowRight, Check, ChevronRight, Layers3, Microscope, Route, Sparkles } from 'lucide-react'
 import { visionPrinciples } from '../../data/visionPrinciples'
 import { eyeStructures } from '../../data/eyeStructures'
 import { useViewerStore } from '../../store/viewerStore'
+import PhotoreceptorNavigation from '../photoreceptors/PhotoreceptorNavigation'
 
 export default function PrinciplePanel() {
   const [tab, setTab] = useState<'principles' | 'structures'>('principles')
@@ -11,23 +12,39 @@ export default function PrinciplePanel() {
   const setStep = useViewerStore((state) => state.setStep)
   const selectStructure = useViewerStore((state) => state.selectStructure)
   const setHover = useViewerStore((state) => state.setHover)
+  const explorationMode = useViewerStore((state) => state.explorationMode)
+  const enterPhotoreceptors = useViewerStore((state) => state.enterPhotoreceptors)
+  const exitPhotoreceptors = useViewerStore((state) => state.exitPhotoreceptors)
+  const activeTab = explorationMode === 'photoreceptors' ? 'photoreceptors' : tab
+
+  function selectTab(next: 'principles' | 'structures' | 'photoreceptors') {
+    if (next === 'photoreceptors') {
+      enterPhotoreceptors()
+    } else {
+      if (explorationMode === 'photoreceptors') exitPhotoreceptors()
+      setTab(next)
+    }
+  }
 
   function handleTabKey(event: KeyboardEvent<HTMLButtonElement>) {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
     event.preventDefault()
-    const next = event.key === 'Home' ? 'principles' : event.key === 'End' ? 'structures' : tab === 'principles' ? 'structures' : 'principles'
-    setTab(next)
-    event.currentTarget.parentElement?.querySelector<HTMLButtonElement>(next === 'principles' ? '#principle-tab' : '#structure-tab')?.focus()
+    const tabs = ['principles', 'structures', 'photoreceptors'] as const
+    const currentIndex = tabs.indexOf(activeTab)
+    const nextIndex = event.key === 'Home' ? 0 : event.key === 'End' ? 2 : (currentIndex + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length
+    selectTab(tabs[nextIndex])
+    event.currentTarget.parentElement?.querySelector<HTMLButtonElement>(['#principle-tab', '#structure-tab', '#photoreceptor-tab'][nextIndex])?.focus()
   }
 
   return (
     <aside className="navigation-panel panel" aria-label="探索导航">
-      <div className="panel-tabs" role="tablist" aria-label="探索方式">
-        <button id="principle-tab" role="tab" tabIndex={tab === 'principles' ? 0 : -1} onKeyDown={handleTabKey} aria-selected={tab === 'principles'} aria-controls="principle-list" onClick={() => setTab('principles')} className={tab === 'principles' ? 'active' : ''}><Route size={15} />视觉原理</button>
-        <button id="structure-tab" role="tab" tabIndex={tab === 'structures' ? 0 : -1} onKeyDown={handleTabKey} aria-selected={tab === 'structures'} aria-controls="structure-list" onClick={() => setTab('structures')} className={tab === 'structures' ? 'active' : ''}><Layers3 size={15} />眼球结构</button>
+      <div className="panel-tabs exploration-tabs" role="tablist" aria-label="探索方式">
+        <button id="principle-tab" role="tab" tabIndex={activeTab === 'principles' ? 0 : -1} onKeyDown={handleTabKey} aria-selected={activeTab === 'principles'} aria-controls="principle-list" onClick={() => selectTab('principles')} className={activeTab === 'principles' ? 'active' : ''}><Route size={14} />视觉原理</button>
+        <button id="structure-tab" role="tab" tabIndex={activeTab === 'structures' ? 0 : -1} onKeyDown={handleTabKey} aria-selected={activeTab === 'structures'} aria-controls="structure-list" onClick={() => selectTab('structures')} className={activeTab === 'structures' ? 'active' : ''}><Layers3 size={14} />眼球结构</button>
+        <button id="photoreceptor-tab" role="tab" tabIndex={activeTab === 'photoreceptors' ? 0 : -1} onKeyDown={handleTabKey} aria-selected={activeTab === 'photoreceptors'} aria-controls="photoreceptor-list" onClick={() => selectTab('photoreceptors')} className={activeTab === 'photoreceptors' ? 'active' : ''}><Microscope size={14} />感光细胞</button>
       </div>
 
-      {tab === 'principles' ? (
+      {activeTab === 'photoreceptors' ? <PhotoreceptorNavigation /> : activeTab === 'principles' ? (
         <div id="principle-list" role="tabpanel" aria-labelledby="principle-tab" className="navigation-content">
           <div className="navigation-section-label">视觉的形成<span>6 个步骤</span></div>
           <div className="principle-list">

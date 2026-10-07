@@ -32,6 +32,8 @@ npm test            # 教学状态和光线路径约束测试
 - 播放、暂停、重新播放、上一步 / 下一步、连续播放控制。
 - 观察远处 / 近处切换与晶状体厚度演示；明亮 / 较暗环境与瞳孔口径演示。
 - 视网膜光信号转为神经信号的视神经脉冲演示。
+- “感光细胞”探索：眼球分布 / 局部放大，中央凹中心、周边视网膜与视盘选择，可隐藏其他结构。
+- 视锥 / 视杆形态与功能比较、单眼数量比例、明亮 / 暮光 / 暗光的相对视觉贡献与感知示意；页面附科学来源。
 - WebGL 错误的中文回退提示，以及独立于 WebGL 的说明和控制面板。
 
 鼠标左键拖动旋转，滚轮缩放，右键拖动平移；点击结构或标签选中。页面「操作帮助」包含交互说明。
@@ -44,6 +46,8 @@ npm test            # 教学状态和光线路径约束测试
 
 角膜、瞳孔、晶状体、视网膜及视神经的基础视觉流程参考 [美国国家眼科研究所说明](https://www.nei.nih.gov/eye-health-information/healthy-vision/how-eyes-work)。
 
+感光细胞模块的数量采用 [Curcio 等（1990）原始研究](https://pubmed.ncbi.nlm.nih.gov/2324310/)的单眼样本均值：约 460 万视锥、9200 万视杆，存在个体差异。中央凹中心无视杆；周边保留两类，视杆占优势；视盘没有两类感光细胞。模型中的点数、区域标记、形状比例、配色与光照贡献为教学示意，暗光模式指仍有微弱光线且已经暗适应的环境。完整科学核实、层次方向和来源见 `docs/photoreceptor_science.md`。
+
 ## 技术栈
 
 React 19 / TypeScript / Vite 7 / Three.js / React Three Fiber 9 / drei / Zustand / CSS / lucide-react。无后端、账户、SaaS、运行时 CDN 字体或远程纹理。React 与 Fiber 的主版本配对遵循 [React Three Fiber 官方说明](https://r3f.docs.pmnd.rs/getting-started/installation)。
@@ -55,7 +59,8 @@ EyeVisPro/
 ├── docs/
 │   ├── requirements.md       完整需求与当前阶段
 │   ├── architecture.md       方案、坐标与组件职责
-│   └── project_memory.md     实现状态、验证与后续事项
+│   ├── project_memory.md     实现状态、验证与后续事项
+│   └── photoreceptor_science.md  感光细胞科学核实与来源
 ├── public/
 │   ├── favicon.svg
 │   └── models/eye/           正式 GLB 预留目录
@@ -64,11 +69,12 @@ EyeVisPro/
 │   │   ├── viewer/           模型、光线、标注、相机
 │   │   ├── layout/           标题、导航、说明
 │   │   ├── controls/         视图与动画控制
+│   │   ├── photoreceptors/  感光细胞导航、比较与感知示意
 │   │   └── ui/               通用界面组件
 │   ├── data/                 结构、教学步骤、标注
 │   ├── store/viewerStore.ts  统一教学状态
 │   ├── types/                共享类型
-│   ├── utils/optics.ts       光学示意路径生成
+│   ├── utils/               光学路径与感光细胞分布生成
 │   ├── App.tsx
 │   ├── main.tsx
 │   └── styles.css

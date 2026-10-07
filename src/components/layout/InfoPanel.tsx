@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowUpRight, Lightbulb, ScanEye } from 'lucide-react'
 import { useViewerStore } from '../../store/viewerStore'
 import { structureById } from '../../data/eyeStructures'
 import { visionPrinciples } from '../../data/visionPrinciples'
+import PhotoreceptorInfo from '../photoreceptors/PhotoreceptorInfo'
 
 function OpticalDiagram() {
   return (
@@ -30,9 +31,12 @@ export default function InfoPanel() {
   const setStep = useViewerStore((state) => state.setStep)
   const focusMode = useViewerStore((state) => state.focusMode)
   const ambientMode = useViewerStore((state) => state.ambientMode)
+  const explorationMode = useViewerStore((state) => state.explorationMode)
   const step = visionPrinciples[currentStep]
   const structure = selected ? structureById[selected] : undefined
   const relatedSteps = structure ? visionPrinciples.filter((item) => item.relatedStructures.includes(structure.id)) : []
+
+  if (explorationMode === 'photoreceptors') return <PhotoreceptorInfo />
 
   return (
     <aside className="info-panel panel" aria-label={structure ? '当前结构说明' : '当前视觉原理说明'}>

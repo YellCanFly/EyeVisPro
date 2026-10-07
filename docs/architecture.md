@@ -47,5 +47,14 @@ OrthographicCamera + OrbitControls，旋转、滚轮缩放、右键平移。依�
 ## 性能与错误处理
 DPR 最高 1.75；几何 useMemo；无每帧 React setState；Canvas 资源由 R3F dispose。程序模型无需网络加载；Canvas fallback、ErrorBoundary 和上下文丢失消息为中文。未来 GLB 接入需 Suspense、加载失败处理、映射验证。开发阶段检查 tsc、生产构建、浏览器 Console、关键交互与窄屏。
 
+## 感光细胞模块（2026-10-07，编码前决策）
+- 眼球地标统一为 src/data/eyeLandmarks.ts；Z 正方向定义为示意眼的鼻侧。视盘位于中央凹鼻侧、略偏上，同步视神经模型、脉冲路径与分布图锚点，纠正第一阶段视盘在黄斑下方的粗略放置。
+- 使用独立 explorationMode（vision / photoreceptors），原眼球结构 ID 与 Mesh 映射保持稳定。新增局部/整体视图、区域、细胞选择、视网膜隔离和三档教学光照状态。
+- src/data/photoreceptors.ts 保存中文知识、来源、区域世界锚点、配色及数量；photoreceptorAnnotations.ts 独立保存局部标签锚点与部位名称；src/utils/photoreceptors.ts 保存定性分布采样与贡献教学映射。分布点和放大细胞均为本地程序几何，无外部资产。
+- 分布使用确定性抽样；中央凹中心不采样视杆、视盘不采样任一种细胞。点密度仅展示趋势，避免误称真实细胞密度图。局部区域用代表细胞展示形状，数量用独立比例条说明。
+- EyeViewer 按模式显示 EyeModel / PhotoreceptorSystem；整体模式可仅保留视网膜，局部模式隐藏整体眼球、原光线和原标注。保持一个 Canvas、一个 DOM 标签层，不使用 drei Html 独立根。
+- CameraController 新增分布/局部相机预设，切换与重置恢复适合的取景；细胞材质响应在 useFrame/ref 中阻尼更新，无逐帧 React 状态更新。
+- UI 与三维模块分离，来源链接属于可选在线查阅，教学主体无需网络。细胞模式暂停六步骤时钟，返回保留原进度，原理/结构动作退出细胞模式。
+
 ## 浏览器联调决策
 使用 Vitest 5 验证教学状态边界和光学约束。初次联调发现 drei Html 为标签创建独立 React root，Canvas 事件容器连接导致 Html target 变化，其 layout effect 清理同步 unmount 子 root，在 React 提交中产生 Console 错误。去除入口 StrictMode 仍复现，确认不是 StrictMode 根因。因此改用同一 React 树内的单层 HTML overlay + 世界坐标投影，加载提示也置于 Canvas 外；不修改第三方依赖或屏蔽日志。最终恢复入口 StrictMode，保留显式 Three.js 资源清理，并验证切换与重载。远近晶状体 X 半厚度为 .18 / .25，近距前表面仍处于虹膜平面之后。玻璃体透明壳不参与射线命中，避免抢占视网膜选择。

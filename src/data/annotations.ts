@@ -31,8 +31,8 @@ export const annotations: Annotation[] = [
   {
     id: 'annotation-optic-nerve',
     structureId: 'optic-nerve',
-    position: [2.1, -0.36, -0.27],
-    labelPosition: [2.47, -1.51, 0.08],
+    position: [2.1, 0.36, -0.06],
+    labelPosition: [2.6, -1.51, 0.08],
     fullVisible: true,
   },
 ]
