@@ -11,7 +11,8 @@
 - 新增 `.github/workflows/deploy.yml`：Node.js 22、`npm ci`、`npm test`、`npm run build`，构建成功后发布 `dist/` 到 `github-pages`。支持 `main` 推送与手动触发，仅部署任务有 Pages 写入和身份令牌权限。
 - 本地验证：3 个测试文件、15 项测试通过，严格 TypeScript 与生产构建通过；子路径产物的 JS、CSS、favicon 路径正确，浏览器眼球场景正常，Console 无 error / warn。Three.js 约 704KB 的既有构建提示不影响发布。
 - 当前无 URL 路由或运行时远程资产依赖，无需额外路由回退；正式模型尚未接入，未来本地资产加载须使用 `import.meta.env.BASE_URL`。
-- README、需求与架构已同步；远端启用 Pages、推送和线上验收正在本次发布流程中执行，完成后记录结果。
+- 远端已启用 Actions 发布与强制 HTTPS，配置已推送 `main`。首次运行 `37568147094` 构建、测试和部署成功，线上首页与全部脚本、样式、图标返回 HTTP 200。
+- 根据首次 CI 的 Node.js 20 弃用提示，部署 Actions 更新为官方 Node.js 24 运行时版本：checkout v7、setup-node v7、configure-pages v6、upload-pages-artifact v5、deploy-pages v5；应用构建仍使用 Node.js 22。最终发布与线上浏览器验收继续验证。
 
 ## 2026-10-07 感光细胞扩展
 - 第三导航标签“感光细胞”：选择中央凹中心 / 周边视网膜 / 视盘，单独看视锥、视杆或两者。
