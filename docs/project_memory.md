@@ -12,7 +12,8 @@
 - 本地验证：3 个测试文件、15 项测试通过，严格 TypeScript 与生产构建通过；子路径产物的 JS、CSS、favicon 路径正确，浏览器眼球场景正常，Console 无 error / warn。Three.js 约 704KB 的既有构建提示不影响发布。
 - 当前无 URL 路由或运行时远程资产依赖，无需额外路由回退；正式模型尚未接入，未来本地资产加载须使用 `import.meta.env.BASE_URL`。
 - 远端已启用 Actions 发布与强制 HTTPS，配置已推送 `main`。首次运行 `37568147094` 构建、测试和部署成功，线上首页与全部脚本、样式、图标返回 HTTP 200。
-- 根据首次 CI 的 Node.js 20 弃用提示，部署 Actions 更新为官方 Node.js 24 运行时版本：checkout v7、setup-node v7、configure-pages v6、upload-pages-artifact v5、deploy-pages v5；应用构建仍使用 Node.js 22。最终发布与线上浏览器验收继续验证。
+- 根据首次 CI 的 Node.js 20 弃用提示，部署 Actions 更新为官方 Node.js 24 运行时版本：checkout v7、setup-node v7、configure-pages v6、upload-pages-artifact v5、deploy-pages v5；应用构建仍使用 Node.js 22。最终部署提交 `11921fe`，Actions 运行 `37568270948` 的构建与发布均成功，Node.js 20 弃用提示已消除。
+- 线上 Chrome 验收通过：默认半剖眼球、完整眼球切换、感光细胞模块、局部放大及暮光交互，三维场景和中文说明正常，Console 无 error / warn；最终版本重新加载正常。后续推送 `main` 会自动测试、构建并发布。
 
 ## 2026-10-07 感光细胞扩展
 - 第三导航标签“感光细胞”：选择中央凹中心 / 周边视网膜 / 视盘，单独看视锥、视杆或两者。
