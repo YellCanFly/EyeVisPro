@@ -5,6 +5,13 @@
 ## 技术栈与边界
 React 19 + TypeScript + Vite；Three.js、React Three Fiber 9、drei；Zustand 管理教学状态；普通 CSS 构建中文响应式 UI，lucide-react 提供图标。核心无 SaaS、CDN、远程字体、远程纹理或运行时网络依赖。Node.js 22.14+。
 
+## 静态部署（2026-10-07，配置前决策）
+- Vite `base` 统一为 `/EyeVisPro/`，对应 `https://yellcanfly.github.io/EyeVisPro/`；开发与生产预览使用同一子路径。
+- `.github/workflows/deploy.yml` 在 `main` 推送或手动触发时运行。构建任务使用 Node.js 22、`npm ci`、`npm test`、`npm run build`，仅上传 `dist/`。
+- 部署任务依赖构建成功，在 `github-pages` 环境发布；仅部署任务授予 `pages: write` 和 `id-token: write`，源码访问保持 `contents: read`。
+- GitHub Pages 使用 Actions 构建来源，不提交生成的 `dist/`，不增加应用运行时服务或远程模型依赖。
+- 当前没有 URL 路由，模块切换保存在本地状态中，不需要服务端路由回退。
+
 ## 组件层级
 App → Header / PrinciplePanel（原理和结构两个标签）/ EyeViewer / InfoPanel / AnimationControls。EyeViewer → Canvas → EyeModel + LightRaySystem + AnnotationLayer + CameraController + LabelProjector；ProjectedLabels 在 Canvas 外与主 React 树共享单层 DOM overlay。HTML 面板独立于 WebGL，局部渲染错误由中文回退界面承接。
 

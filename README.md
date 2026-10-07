@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-打开终端显示的本地地址（默认 `http://127.0.0.1:5173`）。若端口占用，Vite 会选择下一可用端口。安装依赖需要网络；依赖安装后，页面、模型、图标和动画均在本地运行。
+打开终端显示的本地地址（默认 `http://127.0.0.1:5173/EyeVisPro/`）。若端口占用，Vite 会选择下一可用端口。安装依赖需要网络；依赖安装后，页面、模型、图标和动画均在本地运行。
 
 ```bash
 npm run build       # TypeScript 检查与生产构建，输出 dist/
@@ -21,6 +21,16 @@ npm test            # 教学状态和光线路径约束测试
 ```
 
 生产版需要用静态 HTTP 服务器托管 `dist/`，不应直接双击 `index.html`。
+
+## GitHub Pages 部署
+
+线上地址：[视界实验室](https://yellcanfly.github.io/EyeVisPro/)。
+
+Vite 的 `base` 设置为 `/EyeVisPro/`，开发、生产构建与预览统一使用仓库子路径。执行 `npm run build` 后，通过 `npm run preview` 打开终端提示的地址（默认 `http://127.0.0.1:4173/EyeVisPro/`）可验证生产页面。
+
+仓库 **Settings → Pages → Build and deployment → Source** 使用 **GitHub Actions**。工作流 `.github/workflows/deploy.yml` 在推送 `main` 或从 Actions 手动运行时，依次执行 `npm ci`、`npm test`、`npm run build`，将 `dist/` 上传并发布到 `github-pages` 环境。测试或构建失败会阻止发布，部署结果与网址可在 Actions 中查看。
+
+无需提交 `dist/`，也无需创建 `gh-pages` 分支。日后改变仓库名称、部署路径或改用自定义域名时，应同步调整 `vite.config.ts` 的 `base`。未来通过代码加载 `public/` 中的模型时，使用 `import.meta.env.BASE_URL` 拼接路径，避免绕过仓库子路径。
 
 ## 当前功能
 
